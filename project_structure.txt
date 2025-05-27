@@ -1,0 +1,7 @@
+
+ecommerce-analytics/
+├── client/                  # React frontend
+├── server/                  # Node.js backend
+├── models/                  # TensorFlow models
+├── config/                  # Configuration files
+└── README.md                # Project documentation
