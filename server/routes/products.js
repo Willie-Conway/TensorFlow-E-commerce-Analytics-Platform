@@ -20,6 +20,28 @@ router.get('/', async (req, res) => {
   }
 });
 
+// @route   GET api/products/performance
+// @desc    Get product performance data (sales, stock, views)
+// @access  Public
+router.get('/performance', async (req, res) => {
+  try {
+    const products = await Product.find().sort({ createdAt: -1 });
+
+    // Map to only include relevant fields for performance chart
+    const performanceData = products.map(product => ({
+      name: product.name,
+      sales: product.sales || 0,   // Ensure your Product model has 'sales' field
+      stock: product.stock,
+      views: product.views || 0    // Ensure your Product model has 'views' field
+    }));
+
+    res.json(performanceData);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route   POST api/products
 // @desc    Add new product
 // @access  Private/Admin

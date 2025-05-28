@@ -2,8 +2,14 @@
 // client/src/components/dashboard/KpiCards.js
 
 import React from 'react';
-import { makeStyles } from '@mui/styles';
-import { Grid, Paper, Typography, Avatar, LinearProgress } from '@mui/material';
+import {
+  Grid,
+  Paper,
+  Typography,
+  Avatar,
+  LinearProgress,
+  Box,
+} from '@mui/material';
 import {
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
@@ -13,63 +19,7 @@ import {
   People as PeopleIcon,
 } from '@mui/icons-material';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  paper: {
-    padding: theme.spacing(3),
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    transition: 'all 0.3s ease',
-    '&:hover': {
-      transform: 'translateY(-4px)',
-      boxShadow: theme.shadows[4],
-    },
-  },
-  title: {
-    color: theme.palette.text.secondary,
-    fontWeight: 500,
-    fontSize: '0.875rem',
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
-    marginBottom: theme.spacing(1),
-  },
-  value: {
-    fontWeight: 700,
-    fontSize: '1.5rem',
-    marginBottom: theme.spacing(1),
-  },
-  difference: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: '0.875rem',
-  },
-  positive: {
-    color: theme.palette.success.main,
-  },
-  negative: {
-    color: theme.palette.error.main,
-  },
-  neutral: {
-    color: theme.palette.warning.main,
-  },
-  icon: {
-    height: 56,
-    width: 56,
-    marginBottom: theme.spacing(2),
-    color: theme.palette.primary.main,
-    backgroundColor: theme.palette.primary.light,
-  },
-  progress: {
-    marginTop: theme.spacing(2),
-  },
-}));
-
 const KpiCards = () => {
-  const classes = useStyles();
-
   const kpiData = [
     {
       title: 'Total Revenue',
@@ -102,46 +52,103 @@ const KpiCards = () => {
   ];
 
   return (
-    <div className={classes.root}>
-      <Grid container spacing={3}>
-        {kpiData.map((kpi, index) => (
+    <Grid container spacing={3}>
+      {kpiData.map((kpi, index) => {
+        const isPositive = kpi.difference > 0;
+        const isNegative = kpi.difference < 0;
+
+        return (
           <Grid item xs={12} sm={6} md={3} key={index}>
-            <Paper className={classes.paper} elevation={1}>
-              <Avatar className={classes.icon}>
+            <Paper
+              elevation={2}
+              sx={{
+                p: 3,
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: 4,
+                },
+              }}
+            >
+              <Avatar
+                sx={{
+                  bgcolor: 'primary.light',
+                  color: 'primary.main',
+                  width: 56,
+                  height: 56,
+                  mb: 2,
+                }}
+              >
                 {kpi.icon}
               </Avatar>
-              <Typography className={classes.title} variant="subtitle2">
+
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  textTransform: 'uppercase',
+                  color: 'text.secondary',
+                  fontWeight: 500,
+                  letterSpacing: 0.5,
+                  mb: 1,
+                }}
+              >
                 {kpi.title}
               </Typography>
-              <Typography className={classes.value} variant="h3">
+
+              <Typography variant="h5" fontWeight={700} mb={1}>
                 {kpi.value}
               </Typography>
-              <div className={classes.difference}>
-                {kpi.difference > 0 && (
-                  <ArrowUpwardIcon className={classes.positive} fontSize="small" />
-                )}
-                {kpi.difference < 0 && (
-                  <ArrowDownwardIcon className={classes.negative} fontSize="small" />
-                )}
-                {kpi.difference === 0 && (
-                  <span className={classes.neutral}>—</span>
-                )}
-                <span className={kpi.difference > 0 ? classes.positive : kpi.difference < 0 ? classes.negative : classes.neutral}>
-                  {kpi.difference !== 0 ? `${Math.abs(kpi.difference)}%` : 'No change'} 
-                  {kpi.difference > 0 ? ' increase' : kpi.difference < 0 ? ' decrease' : ''}
-                </span>
-              </div>
-              <LinearProgress 
-                className={classes.progress}
-                variant="determinate" 
-                value={kpi.progress} 
-                color={kpi.difference > 0 ? 'primary' : kpi.difference < 0 ? 'secondary' : 'inherit'}
+
+              <Box
+                display="flex"
+                alignItems="center"
+                sx={{
+                  fontSize: '0.875rem',
+                  color: isPositive
+                    ? 'success.main'
+                    : isNegative
+                    ? 'error.main'
+                    : 'warning.main',
+                }}
+              >
+                {isPositive && <ArrowUpwardIcon fontSize="small" />}
+                {isNegative && <ArrowDownwardIcon fontSize="small" />}
+                {!isPositive && !isNegative && '—'}
+                <Box ml={0.5}>
+                  {kpi.difference !== 0
+                    ? `${Math.abs(kpi.difference)}% ${
+                        isPositive ? 'increase' : 'decrease'
+                      }`
+                    : 'No change'}
+                </Box>
+              </Box>
+
+              <LinearProgress
+                variant="determinate"
+                value={kpi.progress}
+                sx={{
+                  mt: 2,
+                  height: 8,
+                  borderRadius: 5,
+                  backgroundColor: '#e0e0e0',
+                  '& .MuiLinearProgress-bar': {
+                    borderRadius: 5,
+                    backgroundColor: isPositive
+                      ? 'success.main'
+                      : isNegative
+                      ? 'error.main'
+                      : 'warning.main',
+                  },
+                }}
               />
             </Paper>
           </Grid>
-        ))}
-      </Grid>
-    </div>
+        );
+      })}
+    </Grid>
   );
 };
 

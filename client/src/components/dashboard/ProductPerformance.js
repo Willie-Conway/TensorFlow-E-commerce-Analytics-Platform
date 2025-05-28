@@ -1,115 +1,24 @@
-// client/src/components/dashboard/ProductPerformance.js - Product analytics component
-
-// import React, { useEffect } from 'react';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { getProducts } from '../../redux/actions/productActions';
-// import { Bar } from 'react-chartjs-2';
-// import { makeStyles } from '@mui/styles';
-// import Paper from '	@mui/material/Paper';
-// import Typography from '	@mui/material/Typography';
-// import CircularProgress from '	@mui/material/CircularProgress';
-
-// const useStyles = makeStyles((theme) => ({
-//   paper: {
-//     padding: theme.spacing(3),
-//     marginBottom: theme.spacing(3),
-//   },
-//   title: {
-//     marginBottom: theme.spacing(3),
-//   },
-//   progress: {
-//     display: 'flex',
-//     justifyContent: 'center',
-//     margin: theme.spacing(3),
-//   },
-// }));
-
-// const ProductPerformance = () => {
-//   const classes = useStyles();
-//   const dispatch = useDispatch();
-//   const { products, loading } = useSelector((state) => state.product);
-
-//   useEffect(() => {
-//     dispatch(getProducts());
-//   }, [dispatch]);
-
-//   // Prepare data for top performing products
-//   const topProducts = [...(products || [])]
-//     .sort((a, b) => b.sales - a.sales)
-//     .slice(0, 5);
-
-//   const chartData = {
-//     labels: topProducts.map((product) => product.name),
-//     datasets: [
-//       {
-//         label: 'Sales',
-//         data: topProducts.map((product) => product.sales),
-//         backgroundColor: 'rgba(54, 162, 235, 0.6)',
-//         borderColor: 'rgba(54, 162, 235, 1)',
-//         borderWidth: 1,
-//       },
-//       {
-//         label: 'Stock',
-//         data: topProducts.map((product) => product.stock),
-//         backgroundColor: 'rgba(255, 99, 132, 0.6)',
-//         borderColor: 'rgba(255, 99, 132, 1)',
-//         borderWidth: 1,
-//       },
-//     ],
-//   };
-
-//   const options = {
-//     responsive: true,
-//     plugins: {
-//       legend: {
-//         position: 'top',
-//       },
-//       title: {
-//         display: true,
-//         text: 'Top Performing Products',
-//       },
-//     },
-//     scales: {
-//       y: {
-//         beginAtZero: true,
-//       },
-//     },
-//   };
-
-//   return (
-//     <Paper className={classes.paper}>
-//       <Typography variant="h5" className={classes.title}>
-//         Product Performance
-//       </Typography>
-//       {loading ? (
-//         <div className={classes.progress}>
-//           <CircularProgress />
-//         </div>
-//       ) : (
-//         <Bar data={chartData} options={options} />
-//       )}
-//     </Paper>
-//   );
-// };
-
-// export default ProductPerformance;
-
 // Enhanced Product Performance Component
 // client/src/components/dashboard/ProductPerformance.js
 
-import React from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
-import { 
-  Paper, 
-  Typography, 
-  CircularProgress, 
-  Grid,
+import {
+  Paper,
+  Typography,
+  CircularProgress,
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Button,
+  Stack,
 } from '@mui/material';
 import { Bar } from 'react-chartjs-2';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -128,6 +37,10 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     fontWeight: 600,
+  },
+  subtitle: {
+    marginTop: theme.spacing(1),
+    color: '#718096',
   },
   formControl: {
     minWidth: 120,
@@ -150,107 +63,184 @@ const useStyles = makeStyles((theme) => ({
 
 const ProductPerformance = () => {
   const classes = useStyles();
-  
-  const loading = false; // Replace with actual loading state from Redux
-  const [metric, setMetric] = React.useState('sales');
-  
-  const products = [
-    { name: 'Wireless Headphones', sales: 1250, stock: 85, views: 3250 },
-    { name: 'Smart Watch', sales: 980, stock: 42, views: 2780 },
-    { name: 'Bluetooth Speaker', sales: 750, stock: 63, views: 1950 },
-    { name: 'Phone Case', sales: 620, stock: 120, views: 4200 },
-    { name: 'USB-C Cable', sales: 580, stock: 200, views: 3800 },
-  ];
+
+  const [metric, setMetric] = useState('sales');
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch('/api/products/performance');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setProducts(data);
+      } catch (err) {
+        setError('Failed to load product performance data.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleMetricChange = (event) => {
     setMetric(event.target.value);
   };
 
-  const data = {
-    labels: products.map((product) => product.name),
-    datasets: [
-      {
-        label: metric === 'sales' ? 'Sales' : metric === 'stock' ? 'Stock' : 'Views',
-        data: products.map((product) => product[metric]),
-        backgroundColor: metric === 'sales' ? 'rgba(63, 81, 181, 0.7)' : 
-                         metric === 'stock' ? 'rgba(76, 175, 80, 0.7)' : 'rgba(255, 152, 0, 0.7)',
-        borderColor: metric === 'sales' ? 'rgba(63, 81, 181, 1)' : 
-                     metric === 'stock' ? 'rgba(76, 175, 80, 1)' : 'rgba(255, 152, 0, 1)',
-        borderWidth: 1,
-      },
-    ],
+  const handleDownloadPDF = async () => {
+    const input = document.getElementById('chart-area');
+    const canvas = await html2canvas(input);
+    const imgData = canvas.toDataURL('image/png');
+
+    const pdf = new jsPDF('landscape');
+    pdf.text('Product Performance Report', 14, 20);
+    pdf.addImage(imgData, 'PNG', 10, 30, 270, 100);
+    pdf.save(`Product_Performance_${metric}.pdf`);
   };
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        titleFont: {
-          size: 14,
-          weight: 'bold',
+  const handleDownloadCSV = () => {
+    const wsData = [
+      ['Product Name', metric.charAt(0).toUpperCase() + metric.slice(1)],
+      ...products.map((p) => [p.name, p[metric] ?? 0]),
+    ];
+    const worksheet = XLSX.utils.aoa_to_sheet(wsData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Report');
+
+    const blob = new Blob(
+      [XLSX.write(workbook, { bookType: 'csv', type: 'array' })],
+      { type: 'application/octet-stream' }
+    );
+    saveAs(blob, `Product_Performance_${metric}.csv`);
+  };
+
+  const chartData = useMemo(
+    () => ({
+      labels: products.map((product) => product.name),
+      datasets: [
+        {
+          label: metric.charAt(0).toUpperCase() + metric.slice(1),
+          data: products.map((product) => product[metric] ?? 0),
+          backgroundColor:
+            metric === 'sales'
+              ? 'rgba(63, 81, 181, 0.7)'
+              : metric === 'stock'
+              ? 'rgba(76, 175, 80, 0.7)'
+              : 'rgba(255, 152, 0, 0.7)',
+          borderColor:
+            metric === 'sales'
+              ? 'rgba(63, 81, 181, 1)'
+              : metric === 'stock'
+              ? 'rgba(76, 175, 80, 1)'
+              : 'rgba(255, 152, 0, 1)',
+          borderWidth: 1,
         },
-        bodyFont: {
-          size: 12,
-        },
-        padding: 12,
-        cornerRadius: 8,
+      ],
+    }),
+    [metric, products]
+  );
+
+  const chartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        duration: 1000,
+        easing: 'easeOutQuart',
       },
-    },
-    scales: {
-      x: {
-        grid: {
+      plugins: {
+        legend: {
           display: false,
         },
-        ticks: {
-          color: '#718096',
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleFont: {
+            size: 14,
+            weight: 'bold',
+          },
+          bodyFont: {
+            size: 12,
+          },
+          padding: 12,
+          cornerRadius: 8,
         },
       },
-      y: {
-        grid: {
-          color: 'rgba(0, 0, 0, 0.05)',
+      scales: {
+        x: {
+          grid: {
+            display: false,
+          },
+          ticks: {
+            color: '#718096',
+          },
         },
-        ticks: {
-          color: '#718096',
-          precision: 0,
+        y: {
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)',
+          },
+          ticks: {
+            color: '#718096',
+            precision: 0,
+          },
         },
       },
-    },
-  };
+    }),
+    []
+  );
 
   return (
     <Paper className={classes.paper} elevation={0}>
       <div className={classes.header}>
-        <Typography variant="h5" className={classes.title}>
-          Product Performance
-        </Typography>
+        <div>
+          <Typography variant="h5" className={classes.title}>
+            Product Performance
+          </Typography>
+          <Typography variant="body2" className={classes.subtitle}>
+            Metric: {metric.charAt(0).toUpperCase() + metric.slice(1)}
+          </Typography>
+        </div>
         <FormControl variant="outlined" className={classes.formControl} size="small">
           <InputLabel>Metric</InputLabel>
-          <Select
-            value={metric}
-            onChange={handleMetricChange}
-            label="Metric"
-          >
+          <Select value={metric} onChange={handleMetricChange} label="Metric">
             <MenuItem value="sales">Sales</MenuItem>
             <MenuItem value="stock">Stock</MenuItem>
             <MenuItem value="views">Views</MenuItem>
           </Select>
         </FormControl>
       </div>
-      
-      <div className={classes.chartContainer}>
+
+      <div className={classes.chartContainer} id="chart-area">
         {loading ? (
           <div className={classes.progress}>
             <CircularProgress />
           </div>
+        ) : error ? (
+          <Typography color="error" align="center">
+            {error}
+          </Typography>
         ) : (
-          <Bar data={data} options={options} />
+          <Bar data={chartData} options={chartOptions} />
         )}
       </div>
+
+      {!loading && !error && (
+        <Stack direction="row" spacing={2} mt={3}>
+          <Button variant="contained" color="primary" onClick={handleDownloadPDF}>
+            Download PDF
+          </Button>
+          <Button variant="outlined" color="primary" onClick={handleDownloadCSV}>
+            Download CSV
+          </Button>
+        </Stack>
+      )}
     </Paper>
   );
 };

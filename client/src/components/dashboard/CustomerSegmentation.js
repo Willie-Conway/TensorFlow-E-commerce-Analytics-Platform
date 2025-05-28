@@ -1,23 +1,40 @@
-// Customer Segmentation Component
 // client/src/components/dashboard/CustomerSegmentation.js
 
 import React from 'react';
-import { Paper, Typography, CircularProgress, Grid } from '@mui/material';
+import {
+  Paper,
+  Typography,
+  CircularProgress,
+  Grid,
+  Box,
+  Divider,
+  Tooltip,
+} from '@mui/material';
 import { Doughnut } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip as ChartTooltip,
+  Legend,
+} from 'chart.js';
 
-const CustomerSegmentation = () => {
-  const loading = false; // Replace with actual loading state from Redux
+ChartJS.register(ArcElement, ChartTooltip, Legend);
 
-  const data = {
+const CustomerSegmentation = ({ loading = false, segmentationData = null }) => {
+  // Example fallback data for static view/testing
+  const fallbackData = {
     labels: ['New Customers', 'Repeat Customers', 'VIP Customers', 'At Risk Customers'],
     datasets: [
       {
         data: [35, 40, 15, 10],
         backgroundColor: ['#3f51b5', '#4caf50', '#ff9800', '#f44336'],
-        borderWidth: 0,
+        borderWidth: 2,
+        hoverOffset: 10,
       },
     ],
   };
+
+  const data = segmentationData || fallbackData;
 
   const options = {
     responsive: true,
@@ -27,11 +44,11 @@ const CustomerSegmentation = () => {
       legend: { display: false },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: (context) => {
             const label = context.label || '';
             const value = context.raw || 0;
-            const total = context.dataset.data.reduce((acc, data) => acc + data, 0);
-            const percentage = Math.round((value / total) * 100);
+            const total = context.dataset.data.reduce((acc, val) => acc + val, 0);
+            const percentage = ((value / total) * 100).toFixed(1);
             return `${label}: ${percentage}% (${value})`;
           },
         },
@@ -41,78 +58,59 @@ const CustomerSegmentation = () => {
 
   return (
     <Paper
-      elevation={0}
+      elevation={3}
       sx={{
-        padding: 3, // 3 * 8px = 24px
+        padding: 3,
         height: '100%',
+        borderRadius: 4,
+        boxShadow: '0px 4px 20px rgba(0,0,0,0.05)',
       }}
     >
-      <Typography
-        variant="h5"
-        sx={{
-          fontWeight: 600,
-          mb: 3, // marginBottom: 24px
-        }}
-      >
+      <Typography variant="h5" fontWeight={600} mb={2}>
         Customer Segmentation
       </Typography>
+      <Divider sx={{ mb: 2 }} />
 
-      <div
-        style={{
-          height: 300,
-          position: 'relative',
-        }}
-      >
+      <Box height={300} position="relative">
         {loading ? (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: 300,
-            }}
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="100%"
           >
             <CircularProgress />
-          </div>
+          </Box>
         ) : (
           <Doughnut data={data} options={options} />
         )}
-      </div>
+      </Box>
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          marginTop: 16, // theme.spacing(2) = 16px
-        }}
-      >
+      <Grid container spacing={2} mt={2}>
         {data.labels.map((label, index) => (
-          <div
-            key={index}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: 8, // theme.spacing(1) = 8px
-            }}
-          >
-            <div
-              style={{
-                width: 16,
-                height: 16,
-                borderRadius: 4,
-                marginRight: 8, // theme.spacing(1)
-                backgroundColor: data.datasets[0].backgroundColor[index],
-              }}
-            />
-            <Typography variant="body2">
-              {label} ({data.datasets[0].data[index]}%)
-            </Typography>
-          </div>
+          <Grid item xs={6} key={label}>
+            <Box display="flex" alignItems="center">
+              <Box
+                sx={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: '4px',
+                  backgroundColor: data.datasets[0].backgroundColor[index],
+                  mr: 1.5,
+                }}
+              />
+              <Tooltip title={`Raw Value: ${data.datasets[0].data[index]}`}>
+                <Typography variant="body2">
+                  {label} ({data.datasets[0].data[index]}%)
+                </Typography>
+              </Tooltip>
+            </Box>
+          </Grid>
         ))}
-      </div>
+      </Grid>
     </Paper>
   );
 };
 
 export default CustomerSegmentation;
+
