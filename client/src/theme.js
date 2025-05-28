@@ -99,8 +99,8 @@ const theme = createTheme({
           boxSizing: 'border-box',
         },
         html: {
-          '-webkit-font-smoothing': 'antialiased',
-          '-moz-osx-font-smoothing': 'grayscale',
+          WebkitFontSmoothing: 'antialiased', // ✅ Correct camelCase
+          MozOsxFontSmoothing: 'grayscale', // ✅ not 'moz-osx-font-smoothing'
           height: '100%',
         },
         body: {
