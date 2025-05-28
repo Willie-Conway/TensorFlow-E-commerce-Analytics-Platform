@@ -2,7 +2,10 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const tf = require('@tensorflow/tfjs-node');
+// Replace this line:
+// const tf = require('@tensorflow/tfjs-node');
+// With this line:
+const tf = require('@tensorflow/tfjs');
 const Product = require('../models/Product');
 const Order = require('../models/Order');
 

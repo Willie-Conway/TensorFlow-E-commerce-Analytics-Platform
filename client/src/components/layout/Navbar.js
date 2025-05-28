@@ -2,7 +2,7 @@
 // client/src/components/layout/Navbar.js
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import { 
   AppBar, 
   Toolbar, 
@@ -12,13 +12,13 @@ import {
   Menu, 
   MenuItem,
   Divider,
-  Hidden,
   Drawer,
   List,
   ListItem,
   ListItemIcon,
-  ListItemText
-} from '@material-ui/core';
+  ListItemText,
+  Box // Import Box for responsive display control
+} from '@mui/material';
 import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
@@ -27,7 +27,7 @@ import {
   BarChart as AnalyticsIcon,
   Settings as SettingsIcon,
   ExitToApp as LogoutIcon
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
@@ -181,7 +181,12 @@ const Navbar = () => {
         </Toolbar>
       </AppBar>
 
-      <Hidden lgUp implementation="css">
+      {/* Replace Hidden lgUp with Box + sx: show drawer only on large screen and smaller */}
+      <Box
+        component="nav"
+        sx={{ display: { lg: 'none', xs: 'block' } }}
+        aria-label="mobile navigation drawer"
+      >
         <Drawer
           variant="temporary"
           open={mobileOpen}
@@ -195,8 +200,14 @@ const Navbar = () => {
         >
           {drawer}
         </Drawer>
-      </Hidden>
-      <Hidden mdDown implementation="css">
+      </Box>
+
+      {/* Replace Hidden mdDown with Box + sx: show drawer only on medium and up */}
+      <Box
+        component="nav"
+        sx={{ display: { xs: 'none', md: 'block' } }}
+        aria-label="desktop navigation drawer"
+      >
         <Drawer
           classes={{
             paper: classes.drawerPaper,
@@ -206,7 +217,7 @@ const Navbar = () => {
         >
           {drawer}
         </Drawer>
-      </Hidden>
+      </Box>
     </div>
   );
 };

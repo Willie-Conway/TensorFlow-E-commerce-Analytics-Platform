@@ -4,10 +4,10 @@
 // import { useDispatch, useSelector } from 'react-redux';
 // import { getSalesData, getPredictions } from '../../redux/actions/analyticsActions';
 // import { Line } from 'react-chartjs-2';
-// import { makeStyles } from '@material-ui/core/styles';
-// import Paper from '@material-ui/core/Paper';
-// import Typography from '@material-ui/core/Typography';
-// import CircularProgress from '@material-ui/core/CircularProgress';
+// import { makeStyles } from '@mui/styles';
+// import Paper from '	@mui/material/Paper';
+// import Typography from '	@mui/material/Typography';
+// import CircularProgress from '	@mui/material/CircularProgress';
 
 // const useStyles = makeStyles((theme) => ({
 //   paper: {
@@ -124,22 +124,20 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
-import { 
-  Paper, 
-  Typography, 
-  CircularProgress, 
-  Grid, 
-  Tabs, 
-  Tab, 
-  MenuItem, 
-  Select, 
-  FormControl,
-  InputLabel
-} from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 import { Line } from 'react-chartjs-2';
 import { getSalesData, getPredictions } from '../../redux/actions/analyticsActions';
 import { format } from 'date-fns';
+
 
 const useStyles = makeStyles((theme) => ({
   paper: {

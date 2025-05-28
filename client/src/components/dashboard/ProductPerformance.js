@@ -4,10 +4,10 @@
 // import { useDispatch, useSelector } from 'react-redux';
 // import { getProducts } from '../../redux/actions/productActions';
 // import { Bar } from 'react-chartjs-2';
-// import { makeStyles } from '@material-ui/core/styles';
-// import Paper from '@material-ui/core/Paper';
-// import Typography from '@material-ui/core/Typography';
-// import CircularProgress from '@material-ui/core/CircularProgress';
+// import { makeStyles } from '@mui/styles';
+// import Paper from '	@mui/material/Paper';
+// import Typography from '	@mui/material/Typography';
+// import CircularProgress from '	@mui/material/CircularProgress';
 
 // const useStyles = makeStyles((theme) => ({
 //   paper: {
@@ -98,7 +98,7 @@
 // client/src/components/dashboard/ProductPerformance.js
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import { 
   Paper, 
   Typography, 
@@ -108,7 +108,7 @@ import {
   InputLabel,
   Select,
   MenuItem
-} from '@material-ui/core';
+} from '@mui/material';
 import { Bar } from 'react-chartjs-2';
 
 const useStyles = makeStyles((theme) => ({

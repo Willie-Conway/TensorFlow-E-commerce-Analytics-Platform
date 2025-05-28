@@ -1,7 +1,32 @@
-
-ecommerce-analytics/
-├── client/                  # React frontend
-├── server/                  # Node.js backend
-├── models/                  # TensorFlow models
-├── config/                  # Configuration files
-└── README.md                # Project documentation
+src/
+├── App.js
+├── index.js
+├── utils/
+│   └── setAuthToken.js
+├── components/
+│   ├── routing/
+│   │   └── PrivateRoute.js
+│   ├── layout/
+│   │   └── Alert.js
+│   ├── auth/
+│   │   ├── Login.js
+│   │   └── Register.js
+│   ├── products/
+│   │   └── Products.js
+│   ├── customers/
+│   │   └── Customers.js
+│   ├── analytics/
+│   │   └── Analytics.js
+│   ├── settings/
+│   │   └── Settings.js
+│   └── dashboard/
+│       └── SalesChart.js
+├── redux/
+│   ├── actions/
+│   │   ├── analyticsActions.js
+│   │   └── authActions.js
+│   ├── reducers/
+│   │   ├── index.js
+│   │   └── (some reducers)
+│   ├── store.js
+│   └── types.js

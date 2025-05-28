@@ -2,8 +2,8 @@
 // client/src/components/dashboard/KpiCards.js
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Grid, Paper, Typography, Avatar, LinearProgress } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Grid, Paper, Typography, Avatar, LinearProgress } from '@mui/material';
 import {
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
@@ -11,7 +11,7 @@ import {
   MonetizationOn as MonetizationOnIcon,
   ShoppingCart as ShoppingCartIcon,
   People as PeopleIcon,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 
 const useStyles = makeStyles((theme) => ({
   root: {

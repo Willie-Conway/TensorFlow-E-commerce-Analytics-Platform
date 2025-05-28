@@ -2,7 +2,7 @@
 // client/src/components/dashboard/RecentOrders.js
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import { 
   Paper, 
   Typography, 
@@ -15,8 +15,8 @@ import {
   TableRow,
   Avatar,
   Chip
-} from '@material-ui/core';
-import { green, orange, red } from '@material-ui/core/colors';
+} from '@mui/material';
+import { green, orange, red } from '@mui/material/colors';
 
 const useStyles = makeStyles((theme) => ({
   paper: {

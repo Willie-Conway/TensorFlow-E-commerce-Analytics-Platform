@@ -7,12 +7,12 @@ import {
   SALES_ERROR,
   GET_PREDICTIONS,
   PREDICTIONS_ERROR
-} from './types';
+} from '../types';
 
 // Get sales data
-export const getSalesData = () => async dispatch => {
+export const getSalesData = (timeRange) => async dispatch => {
   try {
-    const res = await axios.get('/api/analytics/sales');
+    const res = await axios.get(`/api/analytics/sales?range=${timeRange}`);
 
     dispatch({
       type: GET_SALES_DATA,
@@ -21,10 +21,11 @@ export const getSalesData = () => async dispatch => {
   } catch (err) {
     dispatch({
       type: SALES_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response?.statusText, status: err.response?.status }
     });
   }
 };
+
 
 // Get sales predictions
 export const getPredictions = () => async dispatch => {

@@ -49,10 +49,10 @@
 // client/src/App.js
 
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; 
 import { Provider } from 'react-redux';
-import { ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import store from './redux/store';
 import { loadUser } from './redux/actions/authActions';
 import setAuthToken from './utils/setAuthToken';
@@ -89,15 +89,52 @@ const App = () => {
             <Navbar />
             <main className="main-content">
               <Alert />
-              <Switch>
-                <Route exact path="/login" component={Login} />
-                <Route exact path="/register" component={Register} />
-                <PrivateRoute exact path="/" component={Dashboard} />
-                <PrivateRoute exact path="/products" component={Products} />
-                <PrivateRoute exact path="/customers" component={Customers} />
-                <PrivateRoute exact path="/analytics" component={Analytics} />
-                <PrivateRoute exact path="/settings" component={Settings} />
-              </Switch>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+
+                {/* Private routes wrapped with PrivateRoute */}
+                <Route 
+                  path="/" 
+                  element={
+                    <PrivateRoute>
+                      <Dashboard />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/products" 
+                  element={
+                    <PrivateRoute>
+                      <Products />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/customers" 
+                  element={
+                    <PrivateRoute>
+                      <Customers />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/analytics" 
+                  element={
+                    <PrivateRoute>
+                      <Analytics />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="/settings" 
+                  element={
+                    <PrivateRoute>
+                      <Settings />
+                    </PrivateRoute>
+                  } 
+                />
+              </Routes>
             </main>
           </div>
         </Router>

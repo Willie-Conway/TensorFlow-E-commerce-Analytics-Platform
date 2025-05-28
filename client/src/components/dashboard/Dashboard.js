@@ -1,10 +1,10 @@
 // client/src/components/dashboard/Dashboard.js - Main dashboard component
 
 // import React from 'react';
-// import { makeStyles } from '@material-ui/core/styles';
-// import Grid from '@material-ui/core/Grid';
-// import Paper from '@material-ui/core/Paper';
-// import Typography from '@material-ui/core/Typography';
+// import { makeStyles } from '@mui/styles';
+// import Grid from '@mui/material/Grid';
+// import Paper from '@mui/material/Paper';
+// import Typography from '@mui/material/Typography';
 
 // import SalesChart from './SalesChart';
 // import ProductPerformance from './ProductPerformance';
@@ -58,8 +58,8 @@
 // Professional Dashboard Layout
 // client/src/components/dashboard/Dashboard.js
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Grid, Typography, Hidden } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Grid, Typography, Hidden } from '@mui/material';
 import clsx from 'clsx';
 
 import SalesChart from './SalesChart';
