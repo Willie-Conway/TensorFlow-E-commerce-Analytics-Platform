@@ -1,7 +1,7 @@
 // Advanced Sales Chart with Time Filters
 // client/src/components/dashboard/SalesChart.js
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@mui/styles';
 import Paper from '@mui/material/Paper';
@@ -13,25 +13,26 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
+import Tooltip from '@mui/material/Tooltip';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { Line } from 'react-chartjs-2';
 import { getSalesData, getPredictions } from '../../redux/actions/analyticsActions';
 import { format } from 'date-fns';
-
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(3),
     height: '100%',
+    boxSizing: 'border-box',
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: theme.spacing(3),
-    [theme.breakpoints.down('xs')]: {
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-    },
+    flexWrap: 'wrap',
+    gap: theme.spacing(2),
   },
   title: {
     fontWeight: 600,
@@ -39,22 +40,14 @@ const useStyles = makeStyles((theme) => ({
   controls: {
     display: 'flex',
     alignItems: 'center',
-    [theme.breakpoints.down('xs')]: {
-      marginTop: theme.spacing(2),
-      width: '100%',
-    },
+    flexWrap: 'wrap',
+    gap: theme.spacing(2),
   },
   tab: {
     minWidth: 80,
   },
   formControl: {
-    marginLeft: theme.spacing(2),
-    minWidth: 120,
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: 0,
-      marginTop: theme.spacing(2),
-      width: '100%',
-    },
+    minWidth: 140,
   },
   progress: {
     display: 'flex',
@@ -84,46 +77,60 @@ const chartTypes = [
 const SalesChart = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { salesData, loading } = useSelector((state) => state.analytics);
-  const { predictions, predictionsLoading } = useSelector((state) => state.analytics);
-  
+  const { salesData, loading, error } = useSelector((state) => state.analytics);
+  const { predictions, predictionsLoading, predictionsError } = useSelector((state) => state.analytics);
+
   const [timeRange, setTimeRange] = useState('30');
   const [chartType, setChartType] = useState('revenue');
   const [showPredictions, setShowPredictions] = useState(true);
 
   useEffect(() => {
     dispatch(getSalesData(timeRange));
+  }, [dispatch, timeRange]);
+
+  useEffect(() => {
     if (showPredictions) {
       dispatch(getPredictions());
     }
-  }, [dispatch, timeRange, showPredictions]);
+  }, [dispatch, showPredictions]);
 
   const handleTimeRangeChange = (event, newValue) => {
-    setTimeRange(newValue);
+    if (newValue !== null) setTimeRange(newValue);
   };
 
   const handleChartTypeChange = (event) => {
     setChartType(event.target.value);
   };
 
-  const formatDate = (dateString) => {
-    return format(new Date(dateString), 'MMM d');
+  const toggleShowPredictions = () => {
+    setShowPredictions((prev) => !prev);
   };
 
-  const getChartData = () => {
-    const labels = salesData?.map((item) => formatDate(item._id)) || [];
-    const revenueData = salesData?.map((item) => item.totalSales) || [];
-    const ordersData = salesData?.map((item) => item.count) || [];
-    const averageData = salesData?.map((item) => item.totalSales / item.count) || [];
+  const formatDate = (dateString) => format(new Date(dateString), 'MMM d');
+
+  const getChartData = useMemo(() => {
+    if (!salesData) return { labels: [], datasets: [] };
+
+    const labels = salesData.map((item) => formatDate(item._id));
+    const revenueData = salesData.map((item) => item.totalSales);
+    const ordersData = salesData.map((item) => item.count);
+    const averageData = salesData.map((item) => item.totalSales / (item.count || 1));
+
+    const mainData = 
+      chartType === 'revenue' ? revenueData :
+      chartType === 'orders' ? ordersData : averageData;
 
     const data = {
       labels,
       datasets: [
         {
-          label: chartType === 'revenue' ? 'Revenue ($)' : 
-                chartType === 'orders' ? 'Orders' : 'Average Order Value ($)',
-          data: chartType === 'revenue' ? revenueData : 
-               chartType === 'orders' ? ordersData : averageData,
+          label:
+            chartType === 'revenue'
+              ? 'Revenue ($)'
+              : chartType === 'orders'
+              ? 'Orders'
+              : 'Average Order Value ($)',
+          data: mainData,
           borderColor: '#3f51b5',
           backgroundColor: 'rgba(63, 81, 181, 0.1)',
           borderWidth: 2,
@@ -136,13 +143,14 @@ const SalesChart = () => {
       ],
     };
 
-    if (showPredictions && predictions && predictions.length > 0) {
-      const predictionLabels = predictions?.map((item) => formatDate(item.date)) || [];
-      const predictionData = predictions?.map((item) => item.predictedSales) || [];
-      
+    if (showPredictions && predictions?.length > 0 && chartType === 'revenue') {
+      // Align predictions with existing labels by padding nulls
+      const predictionLabels = predictions.map((item) => formatDate(item.date));
+      const predictionData = predictions.map((item) => item.predictedSales);
+
       data.datasets.push({
         label: 'Predicted Revenue ($)',
-        data: [...Array(salesData?.length || 0).fill(null), ...predictionData],
+        data: [...Array(salesData.length).fill(null), ...predictionData],
         borderColor: '#f50057',
         backgroundColor: 'rgba(245, 0, 87, 0.1)',
         borderWidth: 2,
@@ -158,7 +166,7 @@ const SalesChart = () => {
     }
 
     return data;
-  };
+  }, [salesData, predictions, chartType, showPredictions]);
 
   const options = {
     responsive: true,
@@ -175,25 +183,20 @@ const SalesChart = () => {
         mode: 'index',
         intersect: false,
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        titleFont: {
-          size: 14,
-          weight: 'bold',
-        },
-        bodyFont: {
-          size: 12,
-        },
+        titleFont: { size: 14, weight: 'bold' },
+        bodyFont: { size: 12 },
         padding: 12,
         cornerRadius: 8,
         displayColors: true,
         callbacks: {
-          label: function(context) {
+          label: (context) => {
             let label = context.dataset.label || '';
-            if (label) {
-              label += ': ';
-            }
+            if (label) label += ': ';
             if (context.parsed.y !== null) {
-              label += chartType === 'revenue' || chartType === 'average' ? 
-                      `$${context.parsed.y.toFixed(2)}` : context.parsed.y;
+              label +=
+                chartType === 'revenue' || chartType === 'average'
+                  ? `$${context.parsed.y.toFixed(2)}`
+                  : context.parsed.y;
             }
             return label;
           },
@@ -202,23 +205,15 @@ const SalesChart = () => {
     },
     scales: {
       x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: '#718096',
-        },
+        grid: { display: false },
+        ticks: { color: '#718096' },
       },
       y: {
-        grid: {
-          color: 'rgba(0, 0, 0, 0.05)',
-        },
+        grid: { color: 'rgba(0, 0, 0, 0.05)' },
         ticks: {
           color: '#718096',
-          callback: function(value) {
-            return chartType === 'revenue' || chartType === 'average' ? 
-                  `$${value}` : value;
-          },
+          callback: (value) =>
+            chartType === 'revenue' || chartType === 'average' ? `$${value}` : value,
         },
       },
     },
@@ -243,22 +238,21 @@ const SalesChart = () => {
             textColor="primary"
             variant="scrollable"
             scrollButtons="auto"
+            aria-label="Select time range"
           >
             {timeRanges.map((range) => (
-              <Tab 
-                key={range.value} 
-                value={range.value} 
-                label={range.label} 
-                className={classes.tab}
-              />
+              <Tab key={range.value} value={range.value} label={range.label} className={classes.tab} />
             ))}
           </Tabs>
+
           <FormControl variant="outlined" className={classes.formControl} size="small">
-            <InputLabel>Metric</InputLabel>
+            <InputLabel id="metric-select-label">Metric</InputLabel>
             <Select
+              labelId="metric-select-label"
               value={chartType}
               onChange={handleChartTypeChange}
               label="Metric"
+              aria-label="Select chart metric"
             >
               {chartTypes.map((type) => (
                 <MenuItem key={type.value} value={type.value}>
@@ -267,18 +261,31 @@ const SalesChart = () => {
               ))}
             </Select>
           </FormControl>
+
+          <Tooltip title={showPredictions ? "Hide Predictions" : "Show Predictions"}>
+            <FormControlLabel
+              control={<Switch checked={showPredictions} onChange={toggleShowPredictions} color="primary" />}
+              label="Show Predictions"
+            />
+          </Tooltip>
         </div>
       </div>
-      
-      <div className={classes.chartContainer}>
-        {loading ? (
-          <div className={classes.progress}>
-            <CircularProgress />
-          </div>
-        ) : (
-          <Line data={getChartData()} options={options} />
-        )}
-      </div>
+
+      {loading || predictionsLoading ? (
+        <div className={classes.progress}>
+          <CircularProgress />
+        </div>
+      ) : error || predictionsError ? (
+        <Typography color="error" variant="body1">
+          {error || predictionsError || 'Failed to load sales data.'}
+        </Typography>
+      ) : salesData?.length === 0 ? (
+        <Typography variant="body1">No sales data available for the selected range.</Typography>
+      ) : (
+        <div className={classes.chartContainer}>
+          <Line data={getChartData} options={options} />
+        </div>
+      )}
     </Paper>
   );
 };
