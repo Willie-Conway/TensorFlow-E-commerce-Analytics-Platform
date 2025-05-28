@@ -1,50 +1,3 @@
-// client/src/App.js - Main application component
-
-// import React, { useEffect } from 'react';
-// import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-// import { Provider } from 'react-redux';
-// import store from './redux/store';
-// import { loadUser } from './redux/actions/authActions';
-// import setAuthToken from './utils/setAuthToken';
-
-// import PrivateRoute from './components/routing/PrivateRoute';
-// import Alert from './components/layout/Alert';
-// import Login from './components/auth/Login';
-// import Register from './components/auth/Register';
-// import Dashboard from './components/dashboard/Dashboard';
-// import Navbar from './components/layout/Navbar';
-
-// import './App.css';
-
-// if (localStorage.token) {
-//   setAuthToken(localStorage.token);
-// }
-
-// const App = () => {
-//   useEffect(() => {
-//     store.dispatch(loadUser());
-//   }, []);
-
-//   return (
-//     <Provider store={store}>
-//       <Router>
-//         <div className="App">
-//           <Navbar />
-//           <Alert />
-//           <Switch>
-//             <Route exact path="/login" component={Login} />
-//             <Route exact path="/register" component={Register} />
-//             <PrivateRoute exact path="/" component={Dashboard} />
-//           </Switch>
-//         </div>
-//       </Router>
-//     </Provider>
-//   );
-// };
-
-// export default App;
-
-
 // Final App.js with All Enhancements
 // client/src/App.js
 
@@ -70,6 +23,11 @@ import Settings from './components/settings/Settings';
 import Navbar from './components/layout/Navbar';
 
 import './App.css';
+import KpiCards from './components/dashboard/KpiCards';
+import RecentOrders from './components/dashboard/RecentOrders';
+import SalesChart from './components/dashboard/SalesChart';
+import CustomerSegmentation from './components/dashboard/CustomerSegmentation';
+import ProductPerformance from './components/dashboard/ProductPerformance';
 
 if (localStorage.token) {
   setAuthToken(localStorage.token);
@@ -92,10 +50,11 @@ const App = () => {
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/analytics" element={<Analytics/>} /> {/*Testing the routes*/}
 
                 {/* Private routes wrapped with PrivateRoute */}
                 <Route 
-                  path="/" 
+                  path="/dashboard" 
                   element={
                     <PrivateRoute>
                       <Dashboard />
@@ -133,6 +92,46 @@ const App = () => {
                       <Settings />
                     </PrivateRoute>
                   } 
+                  />
+                <Route 
+                  path="/kpicards" 
+                  element={
+                    <PrivateRoute>
+                      <KpiCards />
+                    </PrivateRoute>
+                  }
+                  />
+                <Route 
+                  path="/recentorders" 
+                  element={
+                    <PrivateRoute>
+                      <RecentOrders />
+                    </PrivateRoute>
+                  }
+                  />
+                <Route 
+                  path="/saleschart" 
+                  element={
+                    <PrivateRoute>
+                      <SalesChart />
+                    </PrivateRoute>
+                  }
+                  />
+                <Route 
+                  path="/customersegmentation" 
+                  element={
+                    <PrivateRoute>
+                      <CustomerSegmentation />
+                    </PrivateRoute>
+                  }
+                  />
+                <Route 
+                  path="productperformance" 
+                  element={
+                    <PrivateRoute>
+                      <ProductPerformance />
+                    </PrivateRoute>
+                  }     
                 />
               </Routes>
             </main>
