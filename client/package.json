@@ -11,6 +11,7 @@
     "@mui/styles": "^6.4.11",
     "@mui/x-data-grid": "^8.4.0",
     "@redux-devtools/extension": "^3.3.0",
+    "@reduxjs/toolkit": "^2.8.2",
     "@tensorflow/tfjs": "^4.22.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",

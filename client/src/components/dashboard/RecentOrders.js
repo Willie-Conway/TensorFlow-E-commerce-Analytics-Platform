@@ -1,114 +1,75 @@
 // Recent Orders Component
 // client/src/components/dashboard/RecentOrders.js
 
-import React from 'react';
-import { makeStyles } from '@mui/styles';
-import { 
-  Paper, 
-  Typography, 
-  CircularProgress, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow,
+import React, { useEffect } from 'react';
+import {
   Avatar,
-  Chip
+  Chip,
+  CircularProgress,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
 } from '@mui/material';
-import { green, orange, red } from '@mui/material/colors';
+import { makeStyles } from '@mui/styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchOrders } from '../../redux/orders/orderSlice'; // Redux Toolkit slice
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(3),
-    height: '100%',
+    borderRadius: theme.shape.borderRadius,
+    boxShadow: theme.shadows[1],
+    backgroundColor: theme.palette.background.paper,
   },
   title: {
     fontWeight: 600,
-    marginBottom: theme.spacing(3),
-  },
-  progress: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 300,
+    marginBottom: theme.spacing(2),
   },
   table: {
     minWidth: 650,
   },
-  avatar: {
-    width: theme.spacing(4),
-    height: theme.spacing(4),
-    marginRight: theme.spacing(2),
-  },
   customerCell: {
     display: 'flex',
     alignItems: 'center',
+    gap: theme.spacing(1),
+  },
+  avatar: {
+    width: 32,
+    height: 32,
   },
   status: {
     fontWeight: 500,
   },
   completed: {
-    backgroundColor: green[100],
-    color: green[800],
+    color: 'green',
   },
   pending: {
-    backgroundColor: orange[100],
-    color: orange[800],
+    color: 'orange',
   },
   cancelled: {
-    backgroundColor: red[100],
-    color: red[800],
+    color: 'red',
+  },
+  progress: {
+    display: 'flex',
+    justifyContent: 'center',
+    padding: theme.spacing(2),
   },
 }));
 
 const RecentOrders = () => {
   const classes = useStyles();
-  
-  const loading = false; // Replace with actual loading state from Redux
-  
-  const orders = [
-    {
-      id: '#ORD-001',
-      customer: 'John Smith',
-      avatar: 'JS',
-      date: '2023-05-15',
-      amount: 125.99,
-      status: 'completed',
-    },
-    {
-      id: '#ORD-002',
-      customer: 'Sarah Johnson',
-      avatar: 'SJ',
-      date: '2023-05-14',
-      amount: 89.50,
-      status: 'completed',
-    },
-    {
-      id: '#ORD-003',
-      customer: 'Michael Brown',
-      avatar: 'MB',
-      date: '2023-05-14',
-      amount: 234.75,
-      status: 'pending',
-    },
-    {
-      id: '#ORD-004',
-      customer: 'Emily Davis',
-      avatar: 'ED',
-      date: '2023-05-13',
-      amount: 56.25,
-      status: 'completed',
-    },
-    {
-      id: '#ORD-005',
-      customer: 'Robert Wilson',
-      avatar: 'RW',
-      date: '2023-05-12',
-      amount: 189.99,
-      status: 'cancelled',
-    },
-  ];
+  const dispatch = useDispatch();
+
+  const { orders, loading } = useSelector((state) => state.orders);
+
+  useEffect(() => {
+    dispatch(fetchOrders());
+  }, [dispatch]);
 
   const getStatusChip = (status) => {
     switch (status) {
@@ -128,7 +89,7 @@ const RecentOrders = () => {
       <Typography variant="h5" className={classes.title}>
         Recent Orders
       </Typography>
-      
+
       {loading ? (
         <div className={classes.progress}>
           <CircularProgress />
@@ -147,19 +108,15 @@ const RecentOrders = () => {
             <TableBody>
               {orders.map((order) => (
                 <TableRow key={order.id}>
-                  <TableCell component="th" scope="row">
-                    {order.id}
-                  </TableCell>
+                  <TableCell>{order.id}</TableCell>
                   <TableCell>
                     <div className={classes.customerCell}>
-                      <Avatar className={classes.avatar}>{order.avatar}</Avatar>
+                      <Avatar className={classes.avatar}>{order.avatar || order.customer[0]}</Avatar>
                       {order.customer}
                     </div>
                   </TableCell>
                   <TableCell align="right">${order.amount.toFixed(2)}</TableCell>
-                  <TableCell align="right">
-                    {getStatusChip(order.status)}
-                  </TableCell>
+                  <TableCell align="right">{getStatusChip(order.status)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

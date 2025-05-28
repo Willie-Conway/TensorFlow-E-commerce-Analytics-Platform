@@ -1,24 +1,14 @@
-// Enhanced Product Performance Component
+// Enhanced Product Performance Component with Drill-Down View
 // client/src/components/dashboard/ProductPerformance.js
 
 import React, { useMemo, useState, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
-import {
-  Paper,
-  Typography,
-  CircularProgress,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-  Stack,
+import { 
+  Paper, Typography, CircularProgress, 
+  FormControl, InputLabel, Select, MenuItem,
+  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button 
 } from '@mui/material';
 import { Bar } from 'react-chartjs-2';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -68,6 +58,7 @@ const ProductPerformance = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,106 +86,67 @@ const ProductPerformance = () => {
     setMetric(event.target.value);
   };
 
-  const handleDownloadPDF = async () => {
-    const input = document.getElementById('chart-area');
-    const canvas = await html2canvas(input);
-    const imgData = canvas.toDataURL('image/png');
-
-    const pdf = new jsPDF('landscape');
-    pdf.text('Product Performance Report', 14, 20);
-    pdf.addImage(imgData, 'PNG', 10, 30, 270, 100);
-    pdf.save(`Product_Performance_${metric}.pdf`);
+  const handleBarClick = (elements) => {
+    if (elements.length > 0) {
+      const index = elements[0].index;
+      setSelectedProduct(products[index]);
+    }
   };
 
-  const handleDownloadCSV = () => {
-    const wsData = [
-      ['Product Name', metric.charAt(0).toUpperCase() + metric.slice(1)],
-      ...products.map((p) => [p.name, p[metric] ?? 0]),
-    ];
-    const worksheet = XLSX.utils.aoa_to_sheet(wsData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Report');
-
-    const blob = new Blob(
-      [XLSX.write(workbook, { bookType: 'csv', type: 'array' })],
-      { type: 'application/octet-stream' }
-    );
-    saveAs(blob, `Product_Performance_${metric}.csv`);
-  };
-
-  const chartData = useMemo(
-    () => ({
-      labels: products.map((product) => product.name),
-      datasets: [
-        {
-          label: metric.charAt(0).toUpperCase() + metric.slice(1),
-          data: products.map((product) => product[metric] ?? 0),
-          backgroundColor:
-            metric === 'sales'
-              ? 'rgba(63, 81, 181, 0.7)'
-              : metric === 'stock'
-              ? 'rgba(76, 175, 80, 0.7)'
-              : 'rgba(255, 152, 0, 0.7)',
-          borderColor:
-            metric === 'sales'
-              ? 'rgba(63, 81, 181, 1)'
-              : metric === 'stock'
-              ? 'rgba(76, 175, 80, 1)'
-              : 'rgba(255, 152, 0, 1)',
-          borderWidth: 1,
-        },
-      ],
-    }),
-    [metric, products]
-  );
-
-  const chartOptions = useMemo(
-    () => ({
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: {
-        duration: 1000,
-        easing: 'easeOutQuart',
+  const chartData = useMemo(() => ({
+    labels: products.map((product) => product.name),
+    datasets: [
+      {
+        label: metric.charAt(0).toUpperCase() + metric.slice(1),
+        data: products.map((product) => product[metric] ?? 0),
+        backgroundColor:
+          metric === 'sales'
+            ? 'rgba(63, 81, 181, 0.7)'
+            : metric === 'stock'
+            ? 'rgba(76, 175, 80, 0.7)'
+            : 'rgba(255, 152, 0, 0.7)',
+        borderColor:
+          metric === 'sales'
+            ? 'rgba(63, 81, 181, 1)'
+            : metric === 'stock'
+            ? 'rgba(76, 175, 80, 1)'
+            : 'rgba(255, 152, 0, 1)',
+        borderWidth: 1,
       },
-      plugins: {
-        legend: {
-          display: false,
-        },
-        tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          titleFont: {
-            size: 14,
-            weight: 'bold',
-          },
-          bodyFont: {
-            size: 12,
-          },
-          padding: 12,
-          cornerRadius: 8,
-        },
+    ],
+  }), [metric, products]);
+
+  const chartOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: {
+      duration: 1000,
+      easing: 'easeOutQuart',
+    },
+    onClick: (event, elements) => handleBarClick(elements),
+    plugins: {
+      legend: {
+        display: false,
       },
-      scales: {
-        x: {
-          grid: {
-            display: false,
-          },
-          ticks: {
-            color: '#718096',
-          },
-        },
-        y: {
-          grid: {
-            color: 'rgba(0, 0, 0, 0.05)',
-          },
-          ticks: {
-            color: '#718096',
-            precision: 0,
-          },
-        },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleFont: { size: 14, weight: 'bold' },
+        bodyFont: { size: 12 },
+        padding: 12,
+        cornerRadius: 8,
       },
-    }),
-    []
-  );
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: '#718096' },
+      },
+      y: {
+        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+        ticks: { color: '#718096', precision: 0 },
+      },
+    },
+  }), [metric, products]);
 
   return (
     <Paper className={classes.paper} elevation={0}>
@@ -217,30 +169,40 @@ const ProductPerformance = () => {
         </FormControl>
       </div>
 
-      <div className={classes.chartContainer} id="chart-area">
+      <div className={classes.chartContainer}>
         {loading ? (
           <div className={classes.progress}>
             <CircularProgress />
           </div>
         ) : error ? (
-          <Typography color="error" align="center">
-            {error}
-          </Typography>
+          <Typography color="error" align="center">{error}</Typography>
         ) : (
           <Bar data={chartData} options={chartOptions} />
         )}
       </div>
 
-      {!loading && !error && (
-        <Stack direction="row" spacing={2} mt={3}>
-          <Button variant="contained" color="primary" onClick={handleDownloadPDF}>
-            Download PDF
+      {/* Drill-down Modal */}
+      <Dialog open={!!selectedProduct} onClose={() => setSelectedProduct(null)} fullWidth maxWidth="sm">
+        <DialogTitle>Product Details</DialogTitle>
+        <DialogContent dividers>
+          {selectedProduct && (
+            <>
+              <Typography variant="h6">{selectedProduct.name}</Typography>
+              <DialogContentText>
+                <strong>Sales:</strong> {selectedProduct.sales}<br />
+                <strong>Stock:</strong> {selectedProduct.stock}<br />
+                <strong>Views:</strong> {selectedProduct.views}<br />
+                <strong>Description:</strong> {selectedProduct.description || 'N/A'}
+              </DialogContentText>
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSelectedProduct(null)} color="primary">
+            Close
           </Button>
-          <Button variant="outlined" color="primary" onClick={handleDownloadCSV}>
-            Download CSV
-          </Button>
-        </Stack>
-      )}
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };
