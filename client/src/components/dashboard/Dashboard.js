@@ -61,7 +61,6 @@ import React from 'react';
 import { makeStyles } from '@mui/styles';
 import { Grid, Typography, Hidden } from '@mui/material';
 import clsx from 'clsx';
-
 import SalesChart from './SalesChart';
 import ProductPerformance from './ProductPerformance';
 import KpiCards from './KpiCards';
