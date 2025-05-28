@@ -1,4 +1,5 @@
 // Enhanced Navbar Component
+// Enhanced Navbar Component
 // client/src/components/layout/Navbar.js
 
 import React from 'react';
@@ -16,6 +17,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  ListItemButton,
   Box,
   useTheme
 } from '@mui/material';
@@ -28,7 +30,13 @@ import {
   Settings as SettingsIcon,
   ExitToApp as LogoutIcon
 } from '@mui/icons-material';
-import { Link, useLocation } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
+
+// Fix LinkBehavior to avoid passing 'button' prop to DOM <a>
+const LinkBehavior = React.forwardRef(function LinkBehavior(props, ref) {
+  const { button, ...other } = props; // exclude 'button'
+  return <RouterLink ref={ref} {...other} />;
+});
 
 const drawerWidth = 240;
 
@@ -49,6 +57,11 @@ const Navbar = () => {
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
+  };
+
+  const handleLogout = () => {
+    // Implement your logout logic here
+    console.log('Logout clicked');
   };
 
   const menuItems = [
@@ -112,7 +125,7 @@ const Navbar = () => {
           <ListItem
             button
             key={item.text}
-            component={Link}
+            component={LinkBehavior}  // use updated LinkBehavior here
             to={item.path}
             sx={location.pathname === item.path ? activeItemStyles : null}
           >
@@ -123,11 +136,13 @@ const Navbar = () => {
       </List>
       <Divider />
       <List>
-        <ListItem button>
-          <ListItemIcon sx={listItemIconStyles}>
-            <LogoutIcon />
-          </ListItemIcon>
-          <ListItemText primary="Logout" />
+        <ListItem disablePadding>
+          <ListItemButton onClick={handleLogout}>
+            <ListItemIcon sx={listItemIconStyles}>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </ListItemButton>
         </ListItem>
       </List>
     </div>
