@@ -1,7 +1,18 @@
-// client\src\components\auth\Login.js
+// client/src/components/auth/Login.js
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { Link as RouterLink } from 'react-router-dom';
 import { login } from '../../redux/actions/authActions';
+
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  Link,
+  Alert,
+} from '@mui/material';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -11,6 +22,8 @@ const Login = () => {
     password: ''
   });
 
+  const [error, setError] = useState(null); // Simple error state
+
   const { email, password } = formData;
 
   const onChange = e =>
@@ -18,36 +31,78 @@ const Login = () => {
 
   const onSubmit = e => {
     e.preventDefault();
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
+    setError(null);
     dispatch(login(email, password));
   };
 
   return (
-    <div>
-      <h2>Login Page</h2>
-      <form onSubmit={onSubmit}>
-        <div>
-          <input
+    <Box
+      sx={{
+        maxWidth: 400,
+        mx: 'auto',
+        mt: 8,
+        p: 3,
+      }}
+    >
+      <Paper elevation={6} sx={{ p: 4 }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          Login
+        </Typography>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <form onSubmit={onSubmit} noValidate>
+          <TextField
+            label="Email"
             type="email"
-            placeholder="Email"
             name="email"
             value={email}
             onChange={onChange}
+            fullWidth
             required
+            margin="normal"
+            autoComplete="email"
           />
-        </div>
-        <div>
-          <input
+
+          <TextField
+            label="Password"
             type="password"
-            placeholder="Password"
             name="password"
             value={password}
             onChange={onChange}
+            fullWidth
             required
+            margin="normal"
+            autoComplete="current-password"
           />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-    </div>
+
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Log In
+          </Button>
+        </form>
+
+        <Typography variant="body2" align="center">
+          Don't have an account?{' '}
+          <Link component={RouterLink} to="/register" underline="hover">
+            Register
+          </Link>
+        </Typography>
+      </Paper>
+    </Box>
   );
 };
 
