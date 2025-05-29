@@ -160,7 +160,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 📧 Contact
 
-Project Maintainer – **Your Name**
+Project Maintainer – **Willie Conway**
 🔗 [GitHub Repo](https://github.com/Willie-Conway/ecommerce-analytics)
 
 
