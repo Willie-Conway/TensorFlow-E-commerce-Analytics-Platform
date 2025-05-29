@@ -1,7 +1,7 @@
 
 # 🛍️ TensorFlow E-commerce Analytics Platform 🚀
 
-
+![Analytics Dashboard](https://github.com/Willie-Conway/TensorFlow-E-commerce-Analytics-Platform/blob/71c9cd4f93c332ce30767ab02c6b031d6cb6f085/Analytics%20Dashboard.png)
 
 A **full-stack** analytics platform for e-commerce businesses, powered by **TensorFlow.js** for predictive analytics and insights.
 
