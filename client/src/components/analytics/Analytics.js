@@ -46,11 +46,11 @@ const columns = [
 
 const Analytics = () => {
   return (
-    <Box p={3}>
+    <Box mt={6} mb={2}>
       <Typography variant="h4" gutterBottom>
         Analytics Dashboard
       </Typography>
-
+    
       {/* Summary Cards */}
       <Grid container spacing={3} mb={4}>
         {summaryData.map(({ label, value }) => (

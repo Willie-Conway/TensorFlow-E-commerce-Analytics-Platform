@@ -3,10 +3,20 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
-import { 
-  Paper, Typography, CircularProgress, 
-  FormControl, InputLabel, Select, MenuItem,
-  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button 
+import {
+  Paper,
+  Typography,
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
 } from '@mui/material';
 import { Bar } from 'react-chartjs-2';
 
@@ -51,6 +61,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
 const ProductPerformance = () => {
   const classes = useStyles();
 
@@ -93,60 +105,66 @@ const ProductPerformance = () => {
     }
   };
 
-  const chartData = useMemo(() => ({
-    labels: products.map((product) => product.name),
-    datasets: [
-      {
-        label: metric.charAt(0).toUpperCase() + metric.slice(1),
-        data: products.map((product) => product[metric] ?? 0),
-        backgroundColor:
-          metric === 'sales'
-            ? 'rgba(63, 81, 181, 0.7)'
-            : metric === 'stock'
-            ? 'rgba(76, 175, 80, 0.7)'
-            : 'rgba(255, 152, 0, 0.7)',
-        borderColor:
-          metric === 'sales'
-            ? 'rgba(63, 81, 181, 1)'
-            : metric === 'stock'
-            ? 'rgba(76, 175, 80, 1)'
-            : 'rgba(255, 152, 0, 1)',
-        borderWidth: 1,
-      },
-    ],
-  }), [metric, products]);
+  const chartData = useMemo(
+    () => ({
+      labels: products.map((product) => product.name),
+      datasets: [
+        {
+          label: capitalize(metric),
+          data: products.map((product) => product[metric] ?? 0),
+          backgroundColor:
+            metric === 'sales'
+              ? 'rgba(63, 81, 181, 0.7)'
+              : metric === 'stock'
+              ? 'rgba(76, 175, 80, 0.7)'
+              : 'rgba(255, 152, 0, 0.7)',
+          borderColor:
+            metric === 'sales'
+              ? 'rgba(63, 81, 181, 1)'
+              : metric === 'stock'
+              ? 'rgba(76, 175, 80, 1)'
+              : 'rgba(255, 152, 0, 1)',
+          borderWidth: 1,
+        },
+      ],
+    }),
+    [metric, products]
+  );
 
-  const chartOptions = useMemo(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: {
-      duration: 1000,
-      easing: 'easeOutQuart',
-    },
-    onClick: (event, elements) => handleBarClick(elements),
-    plugins: {
-      legend: {
-        display: false,
+  const chartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        duration: 1000,
+        easing: 'easeOutQuart',
       },
-      tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        titleFont: { size: 14, weight: 'bold' },
-        bodyFont: { size: 12 },
-        padding: 12,
-        cornerRadius: 8,
+      onClick: (event, elements) => handleBarClick(elements),
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleFont: { size: 14, weight: 'bold' },
+          bodyFont: { size: 12 },
+          padding: 12,
+          cornerRadius: 8,
+        },
       },
-    },
-    scales: {
-      x: {
-        grid: { display: false },
-        ticks: { color: '#718096' },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: '#718096' },
+        },
+        y: {
+          grid: { color: 'rgba(0, 0, 0, 0.05)' },
+          ticks: { color: '#718096', precision: 0 },
+        },
       },
-      y: {
-        grid: { color: 'rgba(0, 0, 0, 0.05)' },
-        ticks: { color: '#718096', precision: 0 },
-      },
-    },
-  }), [metric, products]);
+    }),
+    [metric, products]
+  );
 
   return (
     <Paper className={classes.paper} elevation={0}>
@@ -156,12 +174,18 @@ const ProductPerformance = () => {
             Product Performance
           </Typography>
           <Typography variant="body2" className={classes.subtitle}>
-            Metric: {metric.charAt(0).toUpperCase() + metric.slice(1)}
+            Metric: {capitalize(metric)}
           </Typography>
         </div>
         <FormControl variant="outlined" className={classes.formControl} size="small">
-          <InputLabel>Metric</InputLabel>
-          <Select value={metric} onChange={handleMetricChange} label="Metric">
+          <InputLabel id="metric-select-label">Metric</InputLabel>
+          <Select
+            labelId="metric-select-label"
+            value={metric}
+            onChange={handleMetricChange}
+            label="Metric"
+            inputProps={{ 'aria-label': 'Select metric for product performance' }}
+          >
             <MenuItem value="sales">Sales</MenuItem>
             <MenuItem value="stock">Stock</MenuItem>
             <MenuItem value="views">Views</MenuItem>
@@ -175,23 +199,39 @@ const ProductPerformance = () => {
             <CircularProgress />
           </div>
         ) : error ? (
-          <Typography color="error" align="center">{error}</Typography>
+          <Typography color="error" align="center">
+            {error}
+          </Typography>
+        ) : products.length === 0 ? (
+          <Typography align="center" color="textSecondary">
+            No product performance data available.
+          </Typography>
         ) : (
           <Bar data={chartData} options={chartOptions} />
         )}
       </div>
 
       {/* Drill-down Modal */}
-      <Dialog open={!!selectedProduct} onClose={() => setSelectedProduct(null)} fullWidth maxWidth="sm">
-        <DialogTitle>Product Details</DialogTitle>
+      <Dialog
+        open={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        fullWidth
+        maxWidth="sm"
+        aria-labelledby="product-details-title"
+        aria-describedby="product-details-description"
+      >
+        <DialogTitle id="product-details-title">Product Details</DialogTitle>
         <DialogContent dividers>
           {selectedProduct && (
             <>
               <Typography variant="h6">{selectedProduct.name}</Typography>
-              <DialogContentText>
-                <strong>Sales:</strong> {selectedProduct.sales}<br />
-                <strong>Stock:</strong> {selectedProduct.stock}<br />
-                <strong>Views:</strong> {selectedProduct.views}<br />
+              <DialogContentText id="product-details-description">
+                <strong>Sales:</strong> {selectedProduct.sales}
+                <br />
+                <strong>Stock:</strong> {selectedProduct.stock}
+                <br />
+                <strong>Views:</strong> {selectedProduct.views}
+                <br />
                 <strong>Description:</strong> {selectedProduct.description || 'N/A'}
               </DialogContentText>
             </>

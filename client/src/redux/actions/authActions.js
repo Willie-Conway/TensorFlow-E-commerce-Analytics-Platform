@@ -15,6 +15,8 @@ import {
 } from '../types';
 import setAuthToken from '../../utils/setAuthToken';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 // Load User
 export const loadUser = () => async dispatch => {
   if (localStorage.token) {
@@ -22,7 +24,7 @@ export const loadUser = () => async dispatch => {
   }
 
   try {
-    const res = await axios.get('/api/auth');
+    const res = await axios.get(`${API_URL}/api/auth`);
 
     dispatch({
       type: USER_LOADED,
@@ -46,7 +48,7 @@ export const register = ({ name, email, password }) => async dispatch => {
   const body = JSON.stringify({ name, email, password });
 
   try {
-    const res = await axios.post('/api/users', body, config);
+    const res = await axios.post(`${API_URL}/api/users`, body, config);
 
     dispatch({
       type: REGISTER_SUCCESS,
@@ -55,7 +57,7 @@ export const register = ({ name, email, password }) => async dispatch => {
 
     dispatch(loadUser());
   } catch (err) {
-    const errors = err.response.data.errors;
+    const errors = err.response?.data?.errors;
 
     if (errors) {
       errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
@@ -78,7 +80,7 @@ export const login = (email, password) => async dispatch => {
   const body = JSON.stringify({ email, password });
 
   try {
-    const res = await axios.post('/api/auth', body, config);
+    const res = await axios.post(`${API_URL}/api/auth`, body, config);
     console.log("Login response:", res.data);
 
     dispatch({
@@ -88,7 +90,7 @@ export const login = (email, password) => async dispatch => {
 
     dispatch(loadUser());
   } catch (err) {
-    const errors = err.response.data.errors;
+    const errors = err.response?.data?.errors;
 
     if (errors) {
       errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));

@@ -64,7 +64,6 @@ const useStyles = makeStyles((theme) => ({
 const RecentOrders = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-
   const { orders, loading } = useSelector((state) => state.orders);
 
   useEffect(() => {
@@ -74,11 +73,29 @@ const RecentOrders = () => {
   const getStatusChip = (status) => {
     switch (status) {
       case 'completed':
-        return <Chip label="Completed" className={`${classes.status} ${classes.completed}`} size="small" />;
+        return (
+          <Chip
+            label="Completed"
+            className={`${classes.status} ${classes.completed}`}
+            size="small"
+          />
+        );
       case 'pending':
-        return <Chip label="Pending" className={`${classes.status} ${classes.pending}`} size="small" />;
+        return (
+          <Chip
+            label="Pending"
+            className={`${classes.status} ${classes.pending}`}
+            size="small"
+          />
+        );
       case 'cancelled':
-        return <Chip label="Cancelled" className={`${classes.status} ${classes.cancelled}`} size="small" />;
+        return (
+          <Chip
+            label="Cancelled"
+            className={`${classes.status} ${classes.cancelled}`}
+            size="small"
+          />
+        );
       default:
         return <Chip label={status} size="small" />;
     }
@@ -111,7 +128,9 @@ const RecentOrders = () => {
                   <TableCell>{order.id}</TableCell>
                   <TableCell>
                     <div className={classes.customerCell}>
-                      <Avatar className={classes.avatar}>{order.avatar || order.customer[0]}</Avatar>
+                      <Avatar className={classes.avatar}>
+                        {order.avatar ? order.avatar : order.customer[0]}
+                      </Avatar>
                       {order.customer}
                     </div>
                   </TableCell>

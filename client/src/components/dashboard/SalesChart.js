@@ -1,9 +1,7 @@
 // Advanced Sales Chart with Time Filters
 // client/src/components/dashboard/SalesChart.js
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { makeStyles } from '@mui/styles';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -20,47 +18,6 @@ import { Line } from 'react-chartjs-2';
 import { getSalesData, getPredictions } from '../../redux/actions/analyticsActions';
 import { format } from 'date-fns';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(3),
-    height: '100%',
-    boxSizing: 'border-box',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing(3),
-    flexWrap: 'wrap',
-    gap: theme.spacing(2),
-  },
-  title: {
-    fontWeight: 600,
-  },
-  controls: {
-    display: 'flex',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: theme.spacing(2),
-  },
-  tab: {
-    minWidth: 80,
-  },
-  formControl: {
-    minWidth: 140,
-  },
-  progress: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 300,
-  },
-  chartContainer: {
-    height: 400,
-    marginTop: theme.spacing(2),
-  },
-}));
-
 const timeRanges = [
   { value: '7', label: 'Last 7 days' },
   { value: '30', label: 'Last 30 days' },
@@ -75,10 +32,10 @@ const chartTypes = [
 ];
 
 const SalesChart = () => {
-  const classes = useStyles();
   const dispatch = useDispatch();
-  const { salesData, loading, error } = useSelector((state) => state.analytics);
-  const { predictions, predictionsLoading, predictionsError } = useSelector((state) => state.analytics);
+  const { salesData, loading, error, predictions, predictionsLoading, predictionsError } = useSelector(
+    (state) => state.analytics
+  );
 
   const [timeRange, setTimeRange] = useState('30');
   const [chartType, setChartType] = useState('revenue');
@@ -116,9 +73,8 @@ const SalesChart = () => {
     const ordersData = salesData.map((item) => item.count);
     const averageData = salesData.map((item) => item.totalSales / (item.count || 1));
 
-    const mainData = 
-      chartType === 'revenue' ? revenueData :
-      chartType === 'orders' ? ordersData : averageData;
+    const mainData =
+      chartType === 'revenue' ? revenueData : chartType === 'orders' ? ordersData : averageData;
 
     const data = {
       labels,
@@ -144,7 +100,6 @@ const SalesChart = () => {
     };
 
     if (showPredictions && predictions?.length > 0 && chartType === 'revenue') {
-      // Align predictions with existing labels by padding nulls
       const predictionLabels = predictions.map((item) => formatDate(item.date));
       const predictionData = predictions.map((item) => item.predictedSales);
 
@@ -225,12 +180,36 @@ const SalesChart = () => {
   };
 
   return (
-    <Paper className={classes.paper} elevation={0}>
-      <div className={classes.header}>
-        <Typography variant="h5" className={classes.title}>
+    <Paper
+      elevation={0}
+      sx={{
+        padding: 3,
+        height: '100%',
+        boxSizing: 'border-box',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 24,
+          flexWrap: 'wrap',
+          gap: 16,
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: 600 }}>
           Sales Performance
         </Typography>
-        <div className={classes.controls}>
+
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 16,
+          }}
+        >
           <Tabs
             value={timeRange}
             onChange={handleTimeRangeChange}
@@ -241,11 +220,11 @@ const SalesChart = () => {
             aria-label="Select time range"
           >
             {timeRanges.map((range) => (
-              <Tab key={range.value} value={range.value} label={range.label} className={classes.tab} />
+              <Tab key={range.value} value={range.value} label={range.label} sx={{ minWidth: 80 }} />
             ))}
           </Tabs>
 
-          <FormControl variant="outlined" className={classes.formControl} size="small">
+          <FormControl variant="outlined" size="small" sx={{ minWidth: 140 }}>
             <InputLabel id="metric-select-label">Metric</InputLabel>
             <Select
               labelId="metric-select-label"
@@ -262,7 +241,7 @@ const SalesChart = () => {
             </Select>
           </FormControl>
 
-          <Tooltip title={showPredictions ? "Hide Predictions" : "Show Predictions"}>
+          <Tooltip title={showPredictions ? 'Hide Predictions' : 'Show Predictions'}>
             <FormControlLabel
               control={<Switch checked={showPredictions} onChange={toggleShowPredictions} color="primary" />}
               label="Show Predictions"
@@ -271,18 +250,34 @@ const SalesChart = () => {
         </div>
       </div>
 
-      {loading || predictionsLoading ? (
-        <div className={classes.progress}>
+      {(loading || predictionsLoading) && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 300,
+          }}
+        >
           <CircularProgress />
         </div>
-      ) : error || predictionsError ? (
+      )}
+
+      {(error || predictionsError) && (
         <Typography color="error" variant="body1">
           {error || predictionsError || 'Failed to load sales data.'}
         </Typography>
-      ) : salesData?.length === 0 ? (
-        <Typography variant="body1">No sales data available for the selected range.</Typography>
-      ) : (
-        <div className={classes.chartContainer}>
+      )}
+
+      {salesData?.length === 0 && <Typography variant="body1">No sales data available for the selected range.</Typography>}
+
+      {salesData?.length > 0 && !loading && !predictionsLoading && !error && !predictionsError && (
+        <div
+          style={{
+            height: 400,
+            marginTop: 16,
+          }}
+        >
           <Line data={getChartData} options={options} />
         </div>
       )}

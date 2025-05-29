@@ -6,7 +6,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import store from './redux/store';
 import { loadUser } from './redux/actions/authActions';
 import setAuthToken from './utils/setAuthToken';
 import theme from './theme';
@@ -51,7 +50,7 @@ const App = () => {
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/productperformance" element={<ProductPerformance/>} /> {/*For Testing the routes*/}
+                {/* <Route path="/productperformance" element={<ProductPerformance/>} /> For Testing the routes */}
 
                 {/* Private routes wrapped with PrivateRoute */}
                 <Route 

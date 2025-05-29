@@ -17,6 +17,8 @@ app.use(cors());
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/products', require('./routes/products'));
 app.use('/api/analytics', require('./routes/analytics'));
+app.use('/api/users', require('./routes/users'));
+
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {

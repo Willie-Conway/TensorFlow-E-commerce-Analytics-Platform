@@ -7,21 +7,23 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import { ThemeProvider, createTheme } from '@mui/material/styles';  // <-- import ThemeProvider & createTheme
+import { StylesProvider } from '@mui/styles';      // Import StylesProvider
+import { ThemeProvider, createTheme } from '@mui/material/styles';  // Import ThemeProvider and createTheme
 
 const theme = createTheme({
-  // You can customize the theme here if needed
-  // e.g. palette, typography, spacing, etc.
+  // Customize your theme here if needed, e.g. palette, typography, spacing, etc.
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>                  {/* <-- Wrap app with ThemeProvider */}
-      <Provider store={store}>                      
-        <App />
-      </Provider>
-    </ThemeProvider>
+    <StylesProvider injectFirst>                {/* Wrap app with StylesProvider */}
+      <ThemeProvider theme={theme}>              {/* Wrap app with ThemeProvider */}
+        <Provider store={store}>                  {/* Wrap app with Redux Provider */}
+          <App />
+        </Provider>
+      </ThemeProvider>
+    </StylesProvider>
   </React.StrictMode>
 );
 
