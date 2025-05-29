@@ -114,14 +114,7 @@ npm start
 | `/api/analytics/predict` | GET    | Get sales predictions |
 
 ---
-```code
-graph TD
-    A[Frontend] -->|HTTP Requests| B[Backend API]
-    B -->|CRUD Operations| C[(MongoDB)]
-    B -->|TensorFlow.js| D[Predictive Models]
-    D --> B
-    B --> A
-```
+![Model](https://github.com/Willie-Conway/TensorFlow-E-commerce-Analytics-Platform/blob/a521dd98e171049c0c6eb99d64b67f541a869175/Model.png)
 
 ## 📊 Data Flow
 
