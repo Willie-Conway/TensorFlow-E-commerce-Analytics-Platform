@@ -1,10 +1,13 @@
-// client\src\redux\reducers\authReducer.js
+// client/src/redux/reducers/authReducer.js
+
 import {
   USER_LOADED,
   AUTH_ERROR,
   LOGIN_SUCCESS,
   LOGIN_FAIL,
   LOGOUT,
+  REGISTER_SUCCESS,
+  REGISTER_FAIL,
 } from '../types';
 
 const initialState = {
@@ -25,8 +28,9 @@ export default function authReducer(state = initialState, action) {
         loading: false,
         user: payload,
       };
+    case REGISTER_SUCCESS:
     case LOGIN_SUCCESS:
-      localStorage.setItem('token', payload.token);  // <-- Fix here: store token string, not whole payload
+      localStorage.setItem('token', payload.token); // save token string only
       return {
         ...state,
         token: payload.token,
@@ -34,6 +38,7 @@ export default function authReducer(state = initialState, action) {
         loading: false,
       };
     case AUTH_ERROR:
+    case REGISTER_FAIL:
     case LOGIN_FAIL:
     case LOGOUT:
       localStorage.removeItem('token');

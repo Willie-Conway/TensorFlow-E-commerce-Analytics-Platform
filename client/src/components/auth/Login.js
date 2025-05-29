@@ -1,7 +1,7 @@
 // client/src/components/auth/Login.js
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { login } from '../../redux/actions/authActions';
 
 import {
@@ -16,20 +16,29 @@ import {
 
 const Login = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   });
 
-  const [error, setError] = useState(null); // Simple error state
+  const [error, setError] = useState(null);
 
   const { email, password } = formData;
 
-  const onChange = e =>
+  const { isAuthenticated, error: authError } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard'); // Change this to your desired protected route
+    }
+  }, [isAuthenticated, navigate]);
+
+  const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     if (!email || !password) {
       setError('Please fill in all fields');
@@ -56,6 +65,12 @@ const Login = () => {
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
+          </Alert>
+        )}
+
+        {authError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {authError}
           </Alert>
         )}
 

@@ -85,6 +85,7 @@ const theme = createTheme({
   shape: {
     borderRadius: 8,
   },
+  spacing: 8, // ✅ Added spacing configuration
   shadows: [
     'none',
     '0px 2px 1px -1px rgba(0,0,0,0.02),0px 1px 1px 0px rgba(0,0,0,0.02),0px 1px 3px 0px rgba(0,0,0,0.02)',
@@ -92,28 +93,27 @@ const theme = createTheme({
     ...Array(22).fill('none'),
   ],
   components: {
-  MuiCssBaseline: {
-    styleOverrides: {
-      '@global': {
-        '*': {
-          boxSizing: 'border-box',
-        },
-        html: {
-          WebkitFontSmoothing: 'antialiased', // ✅ Correct camelCase
-          MozOsxFontSmoothing: 'grayscale', // ✅ not 'moz-osx-font-smoothing'
-          height: '100%',
-        },
-        body: {
-          height: '100%',
-        },
-        '#root': {
-          height: '100%',
+    MuiCssBaseline: {
+      styleOverrides: {
+        '@global': {
+          '*': {
+            boxSizing: 'border-box',
+          },
+          html: {
+            WebkitFontSmoothing: 'antialiased',
+            MozOsxFontSmoothing: 'grayscale',
+            height: '100%',
+          },
+          body: {
+            height: '100%',
+          },
+          '#root': {
+            height: '100%',
+          },
         },
       },
     },
   },
-},
 });
-
 
 export default theme;

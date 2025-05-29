@@ -3,7 +3,7 @@
 
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; 
-import { Provider } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import store from './redux/store';
@@ -34,12 +34,13 @@ if (localStorage.token) {
 }
 
 const App = () => {
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    store.dispatch(loadUser());
-  }, []);
+    dispatch(loadUser());
+  }, [dispatch]);
 
   return (
-    <Provider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Router>
@@ -50,7 +51,7 @@ const App = () => {
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/analytics" element={<Analytics/>} /> {/*Testing the routes*/}
+                <Route path="/productperformance" element={<ProductPerformance/>} /> {/*For Testing the routes*/}
 
                 {/* Private routes wrapped with PrivateRoute */}
                 <Route 
@@ -138,7 +139,6 @@ const App = () => {
           </div>
         </Router>
       </ThemeProvider>
-    </Provider>
   );
 };
 

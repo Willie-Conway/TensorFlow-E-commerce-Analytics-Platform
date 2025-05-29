@@ -1,7 +1,7 @@
 // client/src/components/auth/Register.js
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { register } from '../../redux/actions/authActions';
 
 import {
@@ -16,17 +16,27 @@ import {
 
 const Register = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    password2: ''
+    password2: '',
   });
 
   const [error, setError] = useState(null);
 
   const { name, email, password, password2 } = formData;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Redirect or show confirmation
+      navigate('/dashboard'); // or wherever you want
+    }
+  }, [isAuthenticated, navigate]);
 
   const onChange = e =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -49,14 +59,7 @@ const Register = () => {
   };
 
   return (
-    <Box
-      sx={{
-        maxWidth: 400,
-        mx: 'auto',
-        mt: 8,
-        p: 3,
-      }}
-    >
+    <Box sx={{ maxWidth: 400, mx: 'auto', mt: 8, p: 3 }}>
       <Paper elevation={6} sx={{ p: 4 }}>
         <Typography variant="h4" align="center" gutterBottom>
           Register
