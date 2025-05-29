@@ -1,7 +1,7 @@
 
 # 🛍️ TensorFlow E-commerce Analytics Platform 🚀
 
-![Project Banner](https://via.placeholder.com/1200x400/3f51b5/ffffff?text=E-commerce+Analytics+Platform)
+
 
 A **full-stack** analytics platform for e-commerce businesses, powered by **TensorFlow.js** for predictive analytics and insights.
 
