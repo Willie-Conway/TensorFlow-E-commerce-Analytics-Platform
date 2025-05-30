@@ -50,7 +50,7 @@ const App = () => {
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                {/* <Route path="/productperformance" element={<ProductPerformance/>} /> For Testing the routes */}
+
 
                 {/* Private routes wrapped with PrivateRoute */}
                 <Route 
@@ -126,7 +126,7 @@ const App = () => {
                   }
                   />
                 <Route 
-                  path="productperformance" 
+                  path="/productperformance" 
                   element={
                     <PrivateRoute>
                       <ProductPerformance />

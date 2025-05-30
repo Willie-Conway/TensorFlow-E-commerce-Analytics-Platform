@@ -11,7 +11,7 @@ import {
   LOGIN_SUCCESS,
   LOGIN_FAIL,
   LOGOUT,
-  CLEAR_PROFILE
+  CLEAR_PROFILE,
 } from '../types';
 import setAuthToken from '../../utils/setAuthToken';
 
@@ -20,19 +20,22 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 // Load User
 export const loadUser = () => async dispatch => {
   if (localStorage.token) {
-    setAuthToken(localStorage.token);
+    setAuthToken(localStorage.token);  // set token in headers globally
+  } else {
+    // If no token, dispatch AUTH_ERROR to clear user data
+    return dispatch({ type: AUTH_ERROR });
   }
 
   try {
-    const res = await axios.get(`${API_URL}/api/auth`);
+    const res = await axios.get(`${API_URL}/api/auth/user`); // <-- make sure this route exists
 
     dispatch({
       type: USER_LOADED,
-      payload: res.data
+      payload: res.data,
     });
   } catch (err) {
     dispatch({
-      type: AUTH_ERROR
+      type: AUTH_ERROR,
     });
   }
 };
@@ -41,8 +44,8 @@ export const loadUser = () => async dispatch => {
 export const register = ({ name, email, password }) => async dispatch => {
   const config = {
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   };
 
   const body = JSON.stringify({ name, email, password });
@@ -52,8 +55,10 @@ export const register = ({ name, email, password }) => async dispatch => {
 
     dispatch({
       type: REGISTER_SUCCESS,
-      payload: res.data
+      payload: res.data,  // This contains the token
     });
+
+    localStorage.setItem('token', res.data.token); // Save token to localStorage
 
     dispatch(loadUser());
   } catch (err) {
@@ -64,7 +69,7 @@ export const register = ({ name, email, password }) => async dispatch => {
     }
 
     dispatch({
-      type: REGISTER_FAIL
+      type: REGISTER_FAIL,
     });
   }
 };
@@ -73,20 +78,22 @@ export const register = ({ name, email, password }) => async dispatch => {
 export const login = (email, password) => async dispatch => {
   const config = {
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   };
 
   const body = JSON.stringify({ email, password });
 
   try {
     const res = await axios.post(`${API_URL}/api/auth`, body, config);
-    console.log("Login response:", res.data);
+    console.log('Login response:', res.data);
 
     dispatch({
       type: LOGIN_SUCCESS,
-      payload: res.data
+      payload: res.data, // This contains the token
     });
+
+    localStorage.setItem('token', res.data.token); // Save token to localStorage
 
     dispatch(loadUser());
   } catch (err) {
@@ -97,13 +104,14 @@ export const login = (email, password) => async dispatch => {
     }
 
     dispatch({
-      type: LOGIN_FAIL
+      type: LOGIN_FAIL,
     });
   }
 };
 
 // Logout / Clear Profile
 export const logout = () => dispatch => {
+  localStorage.removeItem('token');  // Remove token on logout
   dispatch({ type: CLEAR_PROFILE });
   dispatch({ type: LOGOUT });
 };

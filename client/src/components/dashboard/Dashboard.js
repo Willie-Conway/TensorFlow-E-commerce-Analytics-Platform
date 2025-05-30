@@ -2,7 +2,9 @@
 // client/src/components/dashboard/Dashboard.js
 
 import React from 'react';
-import { Box, Grid, Typography, Divider } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
+import { Box, Grid, Typography } from '@mui/material';
 import SalesChart from './SalesChart';
 import ProductPerformance from './ProductPerformance';
 import KpiCards from './KpiCards';
@@ -10,6 +12,11 @@ import CustomerSegmentation from './CustomerSegmentation';
 import RecentOrders from './RecentOrders';
 
 const Dashboard = () => {
+  const { isAuthenticated, loading } = useSelector((state) => state.auth);
+
+  if (loading) return <Typography>Loading...</Typography>;
+  if (!isAuthenticated) return <Navigate to="/login" />;
+
   return (
     <Box
       sx={{
@@ -19,12 +26,7 @@ const Dashboard = () => {
         minHeight: '100vh',
       }}
     >
-      <Typography
-        variant="h4"
-        fontWeight={700}
-        mb={3}
-        color="text.primary"
-      >
+      <Typography variant="h4" fontWeight={700} mb={3} color="text.primary">
         Analytics Dashboard
       </Typography>
 

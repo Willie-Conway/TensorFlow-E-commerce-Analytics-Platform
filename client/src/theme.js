@@ -51,41 +51,19 @@ const theme = createTheme({
       '"Segoe UI Emoji"',
       '"Segoe UI Symbol"',
     ].join(','),
-    h1: {
-      fontWeight: 700,
-      fontSize: '2.5rem',
-    },
-    h2: {
-      fontWeight: 600,
-      fontSize: '2rem',
-    },
-    h3: {
-      fontWeight: 600,
-      fontSize: '1.75rem',
-    },
-    h4: {
-      fontWeight: 600,
-      fontSize: '1.5rem',
-    },
-    h5: {
-      fontWeight: 600,
-      fontSize: '1.25rem',
-    },
-    h6: {
-      fontWeight: 600,
-      fontSize: '1rem',
-    },
-    subtitle1: {
-      fontWeight: 500,
-    },
-    body1: {
-      lineHeight: 1.6,
-    },
+    h1: { fontWeight: 700, fontSize: '2.5rem' },
+    h2: { fontWeight: 600, fontSize: '2rem' },
+    h3: { fontWeight: 600, fontSize: '1.75rem' },
+    h4: { fontWeight: 600, fontSize: '1.5rem' },
+    h5: { fontWeight: 600, fontSize: '1.25rem' },
+    h6: { fontWeight: 600, fontSize: '1rem' },
+    subtitle1: { fontWeight: 500 },
+    body1: { lineHeight: 1.6 },
   },
   shape: {
     borderRadius: 8,
   },
-  spacing: 8, // ✅ Added spacing configuration
+  spacing: 8,
   shadows: [
     'none',
     '0px 2px 1px -1px rgba(0,0,0,0.02),0px 1px 1px 0px rgba(0,0,0,0.02),0px 1px 3px 0px rgba(0,0,0,0.02)',
@@ -96,9 +74,7 @@ const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         '@global': {
-          '*': {
-            boxSizing: 'border-box',
-          },
+          '*': { boxSizing: 'border-box' },
           html: {
             WebkitFontSmoothing: 'antialiased',
             MozOsxFontSmoothing: 'grayscale',

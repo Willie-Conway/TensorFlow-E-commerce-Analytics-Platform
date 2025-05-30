@@ -1,6 +1,7 @@
 // Advanced Sales Chart with Time Filters
 // client/src/components/dashboard/SalesChart.js
-import React, { useState, useEffect, useMemo } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -65,7 +66,7 @@ const SalesChart = () => {
 
   const formatDate = (dateString) => format(new Date(dateString), 'MMM d');
 
-  const getChartData = useMemo(() => {
+  const getChartData = () => {
     if (!salesData) return { labels: [], datasets: [] };
 
     const labels = salesData.map((item) => formatDate(item._id));
@@ -77,7 +78,7 @@ const SalesChart = () => {
       chartType === 'revenue' ? revenueData : chartType === 'orders' ? ordersData : averageData;
 
     const data = {
-      labels,
+      labels: [...labels],
       datasets: [
         {
           label:
@@ -121,7 +122,7 @@ const SalesChart = () => {
     }
 
     return data;
-  }, [salesData, predictions, chartType, showPredictions]);
+  };
 
   const options = {
     responsive: true,
@@ -180,36 +181,13 @@ const SalesChart = () => {
   };
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        padding: 3,
-        height: '100%',
-        boxSizing: 'border-box',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 24,
-          flexWrap: 'wrap',
-          gap: 16,
-        }}
-      >
+    <Paper elevation={0} sx={{ padding: 3, height: '100%', boxSizing: 'border-box' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
           Sales Performance
         </Typography>
 
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: 16,
-          }}
-        >
+        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
           <Tabs
             value={timeRange}
             onChange={handleTimeRangeChange}
@@ -251,14 +229,7 @@ const SalesChart = () => {
       </div>
 
       {(loading || predictionsLoading) && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: 300,
-          }}
-        >
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
           <CircularProgress />
         </div>
       )}
@@ -269,16 +240,13 @@ const SalesChart = () => {
         </Typography>
       )}
 
-      {salesData?.length === 0 && <Typography variant="body1">No sales data available for the selected range.</Typography>}
+      {salesData?.length === 0 && !loading && (
+        <Typography variant="body1">No sales data available for the selected range.</Typography>
+      )}
 
       {salesData?.length > 0 && !loading && !predictionsLoading && !error && !predictionsError && (
-        <div
-          style={{
-            height: 400,
-            marginTop: 16,
-          }}
-        >
-          <Line data={getChartData} options={options} />
+        <div style={{ height: 400, marginTop: 16 }}>
+          <Line data={getChartData()} options={options} />
         </div>
       )}
     </Paper>

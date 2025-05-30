@@ -1,5 +1,5 @@
 // client/src/redux/reducers/authReducer.js
-
+import setAuthToken from '../../utils/setAuthToken'; // at the top
 import {
   USER_LOADED,
   AUTH_ERROR,
@@ -31,6 +31,7 @@ export default function authReducer(state = initialState, action) {
     case REGISTER_SUCCESS:
     case LOGIN_SUCCESS:
       localStorage.setItem('token', payload.token); // save token string only
+      setAuthToken(payload.token); // <--- ADD THIS LINE
       return {
         ...state,
         token: payload.token,
