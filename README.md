@@ -1,7 +1,7 @@
 
 # 🛍️ TensorFlow E-commerce Analytics Platform 🚀
 
-
+![Analytics Dashboard](https://github.com/Willie-Conway/TensorFlow-E-commerce-Analytics-Platform/blob/07854236768bd24d7a3d64180b05ed823f323618/My%20Analytics%20Dashboard.png)
 
 A **full-stack** analytics platform for e-commerce businesses, powered by **TensorFlow.js** for predictive analytics and insights.
 
@@ -160,7 +160,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 📧 Contact
 
-Project Maintainer – **Your Name**
+Project Maintainer – **Willie Conway**
 🔗 [GitHub Repo](https://github.com/Willie-Conway/ecommerce-analytics)
 
 
